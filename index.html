@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+   <title> 493 Artist Search</title>
+   <!--Bootstrap-->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"></script>
+   <!--Custom Style-->
+   <link rel="stylesheet" type="text/css" href="index.css">
+   <!--Vue-->
+   <script src="https://unpkg.com/vue@3"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+</head>
+
+<body>
+   <div id='app'>
+      <nav class="navbar navbar-default">
+         <div class="container">
+            <div class="navbar-header">
+               <h3>iTunes Artist Search</h3>
+            </div>
+         </div>
+      </nav>
+      <div class="container">
+         <div class="row searchbar">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+               <h4>Enter the name of the artist and press enter: </h4>
+               <input v-on:keyup.enter="search" v-model="term" type="text">
+               <h4>Search Result (Total {{ resultCount }} Found)</h4>
+
+               <div v-if="searching">
+                  <i>Searching...</i>
+               </div>
+
+            </div>
+         </div>
+
+         <div class="col-lg-12 col-md-12 col-sm-12">
+            <div>
+               <button :class="[{'btn btn-success' : selected_buttons.includes('ALL') }, 'btn']" v-on:click="button_select('ALL')">ALL</button>
+               <button v-for="genre in genre_list" v-on:click="button_select(genre)" :class="[{'btn btn-primary' : selected_buttons.includes(genre) }, 'btn']">{{ genre }}</button>
+            </div>
+            <h4>
+               List of results
+            </h4>
+         <div class="dropdown">
+            <button class="btn btn-info  dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              Sort list of results by:
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li :class="[{'active':reset}, '']" @click="select_sort('reset')"><a href="#">Reset to original</a></li>
+              <li :class="[{'active':name}, '']" @click="select_sort('name')"><a href="#">Collection Name</a></li>
+              <li :class="[{'active':price}, '']" @click="select_sort('price')"><a href="#">Price</a></li>
+            </ul>
+          </div>
+         </div>
+
+         <div v-for="(result, index) in results" class="result">
+            <div class='col-lg-6 col-md-6 col-sm-6 artist'>
+               <div class='artist-albumcover col-sm-4'>
+                  <img v-bind:src="result.artworkUrl100">
+               </div>
+
+               <div class='artist-info col-sm-6'>
+                  <ul class="nav nav-tabs">
+                     <li class="active"><a data-toggle="tab" :href="'#desc' + index">Description</a></li>
+                     <li><a data-toggle="tab" :href="'#info' + index">Track Info</a></li>
+                  </ul>
+                  <div class="tab-content">
+                     <div :id="'desc' + index" class="tab-pane fade in active">
+                        <p v-if="result.artistName"><strong>Artist Name</strong>: {{result.artistName}}</p>
+                        <p v-else><strong>Artist Name</strong>: No Information Provided</p>
+                        <p v-if="result.collectionCensoredName"><strong>Collection Name</strong>: {{result.collectionCensoredName}}</p>
+                        <p v-else><strong>Collection Name</strong>: No Information Provided</p>
+                        <p v-if="result.collectionPrice && result.collectionPrice > 0"><strong>Price</strong>: ${{result.collectionPrice}}</p>
+                        <p v-else><strong>Price</strong>: $0</p>
+                        <p v-if="result.kind"><strong>Kind</strong>: {{result.kind}}</p>
+                        <p v-else><strong>Kind</strong>: No Information Provided</p>
+                        <p v-if="result.previewUrl"><strong>Preview</strong>: <a :href="result.previewUrl">Link</a></p>
+                        <p v-else><strong>Preview</strong>: No Information Provided</p>
+                      </div>
+                      <div :id="'info' + index" class="tab-pane fade in">
+                        <p v-if="result.trackId"><strong>Track ID</strong>: {{result.trackId}}</p>
+                        <p v-else><strong>Track ID</strong>: No Information Provided</p>
+                        <p v-if="result.country"><strong>Country</strong>: {{result.country}}</p>
+                        <p v-else><strong>Country</strong>: No Information Provided</p>
+                      </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <script src="script.js"></script>
+</body>
+</html>
